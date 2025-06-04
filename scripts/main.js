@@ -124,3 +124,4 @@ searchButton.addEventListener(`click`, async(e) => {
     displaySong(inputArtist.value, inputTitle.value);
 })
 
+
