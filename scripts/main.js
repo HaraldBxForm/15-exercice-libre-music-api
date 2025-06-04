@@ -53,7 +53,7 @@ async function displayLyrics(artist, title) {
     const lyrics = await getMusicLyrics(artist, title);
 
     lyricsContainer.innerHTML = ``;
-    lyricsContainer.innerHTML += `${lyrics}`
+    lyricsContainer.innerHTML += `<div class="lyrics-box">${lyrics}</div>`
     
 };
 
@@ -63,12 +63,12 @@ async function displaySong(artist, title) {
     const song = await getMusicAudio(artist, title);
 
     musciBoxContainer.innerHTML = `
-    <h2 class="artist">${song.results[0].artistName}</h2>
-    <h1 class="title">${song.results[0].trackName}</h1>
-    <h2 class="album">${song.results[0].collectionName}</h2>
-    <div class="img-container">
+    <a href="${song.results[0].artistViewUrl}" target="_blank"><h2 class="artist">${song.results[0].artistName}</h2></a>
+    <a href="${song.results[0].trackViewUrl}" target="_blank"><h1 class="title">${song.results[0].trackName}</h1></a>
+    <a href="${song.results[0].collectionViewUrl}" target="_blank"><h2 class="album">${song.results[0].collectionName}</h2></a>
+    <a href="${song.results[0].collectionViewUrl}" class="img-container" target="_blank">
         <img src="${song.results[0].artworkUrl100.replace('100x100bb.jpg', '1000x1000bb.jpg')}" alt="">
-    </div>
+    </a>
     <div class="spotify-player audio-container">
         <button id="playPause"><i class="fa fa-play"></i></button>
         <input type="range" id="progress" value="0">
