@@ -38,6 +38,13 @@ body {
   border-radius: 20px;
   padding: 0.5rem 1rem;
   width: 200px;
+  transition: 0.3s all ease-in-out;
+
+  &:hover {
+    color: #1DB954;
+  }
+
+  
 }
 
 .header-wrapper button {
@@ -61,10 +68,38 @@ body {
   margin: 0 auto;
 }
 
+.welcome-message-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 30vh;
+
+    .welcome-message {
+        font-size: 3rem;
+        font-weight: 600;
+
+        a {
+            font-weight: bold;
+            color: #1ca74c;
+        }
+    }
+
+    &.hidden {
+        display: none;
+    }
+}
+
 .song-content {
-  display: grid;
+  display: none;
   grid-template-columns: repeat(12, 1fr);
   gap: 2rem;
+  height: 80vh;
+  margin-bottom: 4rem;
+
+  &.active {
+    display: grid;
+  }
 }
 
 .music-box {
@@ -116,7 +151,7 @@ body {
 }
 
 .lyrics-container {
-    // display: none;
+    display: none;
   white-space: pre-wrap;
   grid-column: span 8;
   font-size: 1.5rem;
@@ -125,8 +160,35 @@ body {
   text-align: center;
   padding: 3rem;
 
+//   width: 300px;           /* Largeur fixe */
+  height: 100%;          /* Hauteur fixe */
+  overflow-y: auto;       /* Scroll vertical si nécessaire */
+  overflow-x: hidden;     /* Pas de scroll horizontal */
+  background-color: #2b2b2b;
+  padding: 1rem;
+  border-radius: 10px;
+  color: white;
+
+  border: 3px solid #1DB954;
+
   &.active {
     display: block;
+  }
+
+  &::-webkit-scrollbar {
+    width: 15px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #333;
+    border-radius: 10px;
+    
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #1DB954;
+    border-radius: 10px;
+    border: 4px solid #333;
   }
 }
 
@@ -160,6 +222,11 @@ body {
 .section-title {
     font-size: 2rem;
     padding: 1rem 2rem;
+
+    &.lyrics-title {
+        text-transform: capitalize;
+        color: #1DB954;
+    }
 }
 
 .reco-wrapper {
@@ -167,6 +234,8 @@ body {
   grid-template-columns: repeat(12, 1fr);
   gap: 1rem;
   align-items: stretch;
+
+  margin-bottom: 3rem;
 }
 
 .reco-wrapper div {
@@ -184,13 +253,24 @@ body {
   height: fit-content;
   flex: 1;
   height: 100%;
-
+    transition: 0.3s all ease-in-out;
   justify-content: space-between;
 
   .title, .album, .artist {
     white-space: nowrap;       /* Empêche le retour à la ligne */
     overflow: hidden;          /* Masque ce qui dépasse */
     text-overflow: ellipsis;
+  }
+
+  &:hover {
+    background-color: #3b3b3b;
+
+    .title, .album, .artist {
+    white-space: nowrap;   
+    overflow: hidden;        
+    text-overflow: ellipsis;
+  }
+
   }
 }
 

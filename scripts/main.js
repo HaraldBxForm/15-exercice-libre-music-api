@@ -9,7 +9,9 @@ const inputTitle = document.querySelector(`.input-title`);
 // Display
 const lyricsContainer = document.querySelector(`.lyrics-container`);
 const musciBoxContainer = document.querySelector(`.music-box`);
+const songContent = document.querySelector(`.song-content`);
 const recoContainer = document.querySelector(`.reco-wrapper`);
+const welcomeMessageContainer = document.querySelector(`.welcome-message-container`)
 
 // Button
 const searchButton = document.querySelector(`.search-button`);
@@ -43,8 +45,10 @@ async function getMusicAudio(artist, title) {
 // Affichage des paroles
 async function displayLyrics(artist, title) {
   const lyrics = await getMusicLyrics(artist, title);
+
+  songContent.classList.add(`active`)
   lyricsContainer.classList.add(`active`);
-  lyricsContainer.innerHTML = `<h2 class="section-title">Today's discoveries</h2><div class="lyrics-box">${lyrics}</div>`;
+  lyricsContainer.innerHTML = `<h2 class="section-title lyrics-title">${title}</h2><div class="lyrics-box">${lyrics}</div>`;
 }
 
 // Affichage du morceau principal
@@ -203,8 +207,14 @@ async function displayReco() {
 
 searchButton.addEventListener(`click`, async (e) => {
   e.preventDefault();
-  await displayLyrics(inputArtist.value, inputTitle.value);
-  await displaySong(inputArtist.value, inputTitle.value);
+
+  if (!inputArtist.value && !inputTitle.value) {
+    inputArtist.focus();
+  } else {
+    welcomeMessageContainer.classList.add(`hidden`);
+    await displayLyrics(inputArtist.value, inputTitle.value);
+    await displaySong(inputArtist.value, inputTitle.value);
+  }
 });
 
 // Auto display reco au chargement
