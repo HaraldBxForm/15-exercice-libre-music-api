@@ -1,26 +1,29 @@
 // ==============================
-// 🌱 Sélection des éléments
+// 🌱 SÉLECTION DES ÉLÉMENTS DU DOM
 // ==============================
 
-// Inputs
+// Inputs utilisateur
 const inputArtist = document.querySelector(`.input-artist`);
 const inputTitle = document.querySelector(`.input-title`);
 
-// Display
+// Conteneurs d'affichage
 const lyricsContainer = document.querySelector(`.lyrics-container`);
 const musciBoxContainer = document.querySelector(`.music-box`);
 const songContent = document.querySelector(`.song-content`);
 const recoContainer = document.querySelector(`.reco-wrapper`);
-const welcomeMessageContainer = document.querySelector(`.welcome-message-container`)
+const welcomeMessageContainer = document.querySelector(`.welcome-message-container`);
 
-// Button
+// Bouton de recherche
 const searchButton = document.querySelector(`.search-button`);
 
+
 // ==============================
-// 🎊 Fonctionnalités
+// 🎊 FONCTIONNALITÉS PRINCIPALES
 // ==============================
 
-// Appel API Lyrics
+/**
+ * 🔡 Récupère les paroles d'une chanson depuis l'API Lyrics.ovh
+ */
 async function getMusicLyrics(artist, title) {
   try {
     const response = await fetch(`https://api.lyrics.ovh/v1/${artist}/${title}`);
@@ -31,7 +34,9 @@ async function getMusicLyrics(artist, title) {
   }
 }
 
-// Appel API iTunes
+/**
+ * 🔊 Récupère les infos audio depuis l'API iTunes
+ */
 async function getMusicAudio(artist, title) {
   try {
     const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(artist + ' ' + title)}&media=music&limit=1`);
@@ -42,21 +47,32 @@ async function getMusicAudio(artist, title) {
   }
 }
 
-// Affichage des paroles
+/**
+ * 📃 Affiche les paroles dans le DOM
+ */
 async function displayLyrics(artist, title) {
   const lyrics = await getMusicLyrics(artist, title);
 
-  songContent.classList.add(`active`)
+  songContent.classList.add(`active`);
   lyricsContainer.classList.add(`active`);
-  lyricsContainer.innerHTML = `<h2 class="section-title lyrics-title">${title}</h2><div class="lyrics-box">${lyrics}</div>`;
+
+  // Si paroles absentes ou vides, afficher message d'erreur
+  if (!lyrics || lyrics.trim() === "") {
+    lyricsContainer.innerHTML = `<h2 class="section-title lyrics-title">${title}</h2><div class="lyrics-box not-found-message"><i class="fa-solid fa-music"></i>  Lyrics not found  <i class="fa-solid fa-music"></i></div>`;
+  } else {
+    lyricsContainer.innerHTML = `<h2 class="section-title lyrics-title">${title}</h2><div class="lyrics-box">${lyrics}</div>`;
+  }
 }
 
-// Affichage du morceau principal
+/**
+ * 🎼 Affiche le morceau principal avec lecteur audio
+ */
 async function displaySong(artist, title) {
   const song = await getMusicAudio(artist, title);
   if (!song.results || song.results.length === 0) return;
   const result = song.results[0];
 
+  // 🖼️ Affichage des infos chanson
   musciBoxContainer.innerHTML = `
     <div class="music-box-content">
       <a href="${result.artistViewUrl}" target="_blank"><h2 class="artist">${result.artistName}</h2></a>
@@ -73,6 +89,7 @@ async function displaySong(artist, title) {
       </div>
     </div>`;
 
+  // 🎛️ Gestion du lecteur audio
   const audio = document.getElementById("audio");
   const playPause = document.getElementById("playPause");
   const progress = document.getElementById("progress");
@@ -106,7 +123,10 @@ async function displaySong(artist, title) {
   }
 }
 
-// Appel API Last.fm pour les reco
+
+/**
+ * 💡 Appelle l’API Last.fm pour obtenir les morceaux populaires
+ */
 async function getReco() {
   try {
     const response = await fetch('https://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=9e7cab0511a7d5c1b5c4546f975a834c&format=json');
@@ -117,7 +137,10 @@ async function getReco() {
   }
 }
 
-// Affichage des recommandations
+
+/**
+ * 🔁 Affiche un morceau recommandé (vignette + lecteur)
+ */
 async function displaySongReco(artist, title) {
   const song = await getMusicAudio(artist, title);
   if (!song.results || song.results.length === 0) return;
@@ -135,12 +158,12 @@ async function displaySongReco(artist, title) {
       <div class="spotify-player audio-container">
         <button class="playPause"><i class="fa fa-play"></i></button>
         <input type="range" class="progress" value="0">
-        
         <audio class="audio" src="${result.previewUrl}"></audio>
       </div>`;
 
   recoContainer.appendChild(div);
 
+  // 🎧 Gestion audio pour les reco
   const audio = div.querySelector(".audio");
   const playPause = div.querySelector(".playPause");
   const progress = div.querySelector(".progress");
@@ -175,13 +198,14 @@ async function displaySongReco(artist, title) {
   }
 }
 
+/**
+ * 📀 Affiche une liste de recommandations (top 20)
+ */
 async function displayReco() {
   const recos = await getReco();
-  const recosList = recos.tracks.track.slice(0, 20); // Prend 20 recommandations
-
+  const recosList = recos.tracks.track.slice(0, 20); // Limite à 20 morceaux
   recoContainer.innerHTML = "";
 
-  // Prépare un tableau de promesses pour récupérer tous les morceaux en parallèle
   const promises = recosList.map(async (track) => {
     const artist = track.artist.name;
     const title = track.name;
@@ -193,18 +217,19 @@ async function displayReco() {
     return false;
   });
 
-  // Attend que toutes les promesses soient résolues
   const results = await Promise.all(promises);
-
-  // Optionnel: console log nombre de morceaux affichés
   const count = results.filter(Boolean).length;
   console.log(`Morceaux affichés : ${count}`);
 }
 
+
 // ==============================
-// 🧲 Événements
+// 🧲 GESTION DES ÉVÉNEMENTS
 // ==============================
 
+/**
+ * 🔍 Recherche manuelle via bouton
+ */
 searchButton.addEventListener(`click`, async (e) => {
   e.preventDefault();
 
@@ -217,7 +242,9 @@ searchButton.addEventListener(`click`, async (e) => {
   }
 });
 
-// Auto display reco au chargement
+/**
+ * 🚀 Affichage automatique des reco au chargement
+ */
 document.addEventListener("DOMContentLoaded", () => {
   displayReco();
 });
